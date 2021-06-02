@@ -62,7 +62,7 @@ server.listen(port);
   à node server, soit en installant nodemon
   qui suivra les changements server de manière dynamique: npm install nodemon -g 
   Pour utiliser nodemon on lance: nodemon ./server.js localhost 3000
-  ici 3000 c'est pen fonction de la donnée du noarmalizePort
+  ici 3000 c'est en fonction de la donnée du normalizePort
   */
 
 /*le côté server est terminé, pour l'instant ? On retourne sur app.js */

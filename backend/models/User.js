@@ -18,7 +18,6 @@ const userSchema = mongoose.Schema({
 userSchema.plugin(uniqueValidator);
 
 /* 21- on prépare le model user à l'exportation dans les .js nécessaires */
-module.export = mongoose;
-mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);
 
 //on va maintenant créer un dossier middleware qu'on va remplir pour utiliser un peu plus tard. le premier à remplir sera multer-config
