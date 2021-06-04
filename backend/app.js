@@ -91,33 +91,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/api/sauces", sauceRoutes);
 app.use("/api/auth", userRoutes);
 
-/* 48- */
-//pour que l'utilisateur puisse modifier les données c'est put
-app.put("/api/sauces/:id", (req, res, next) => {
-  Thing.updateOne(
-    { _id: req.params.id },
-    {
-      ...req.body,
-      _id: req.params.id,
-    } /*la nouvelle version de l'objet vu qu'il y a update*/
-  )
-    .then(() => res.status(200).json({ message: "" }))
-    .catch((error) => res.status(400).json({ error }));
-});
 
-//pour que l'utilisateur puisse supprimer les données c'est delete
-app.delete("/api/sauces/:id", (req, res, next) => {
-  Thing.deleteOne({ _id: req.params.id })
-    .then(() => res.status(200).json({ message: "" }))
-    .catch((error) => res.status(400).json({ error }));
-});
-
-//pour trouver un seul objet par son identifiant/id. le : dit à exxpress que cette partie de la route est dynamique
-app.get("/api/sauces/:id", (req, res, next) => {
-  Thing.findOne({ _id: req.params.id /*paramètre de route dynamique*/ })
-    .then((thing) => res.status(200).json(thing))
-    .catch((error) => res.status(404).json({ error }));
-});
 
 /* 4- on crée la fonction qui permettra d'exporter app/express dans les autres fichiers js */
 module.exports = app;

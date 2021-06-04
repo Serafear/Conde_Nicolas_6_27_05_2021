@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
   //le deuxième élément filename explique à multer quel nom de fichier utilisé. On va crée un nom custom
   filename: (req, file, callback) => {
     //on va utiliser le nom d'origine du fichier. On va éliminer des espaces si présents en les remplaçants par des underscore avec split et on rejoint le tout avec join
-    const name = file.orginalname.split("").join("");
+    const name = file.originalname.split("").join("");
     //on va utiliser les mime type pour custom le nom
     const extension = MIME_TYPES[file.mimetype];
     //date now recupere date+heure à la miliseconde ce qui rend les dates quasi impossible à être identiques.

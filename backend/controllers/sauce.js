@@ -67,7 +67,7 @@ exports.deleteSauce = (req, res, next) => {
     .catch((error) => res.status(500).json({ error }));
 };
 
-exports.getAllStuff = (req, res, next) => {
+exports.getAllSauce = (req, res, next) => {
   Thing.find()
     .then((things) => {
       res.status(200).json(things);
@@ -79,16 +79,6 @@ exports.getAllStuff = (req, res, next) => {
     });
 };
 
-exports.likeSauce = (req, res, next) => {
-  const thingObject = JSON.parse(req.body.thing);
-  delete thingObject._id;
-  const thing = new Thing({
-    ...thingObject,
-  });
-  thing
-    .save()
-    .then(() => res.status(201).json({ message: "" }))
-    .catch((error) => res.status(400).json({ error }));
-};
+
 
 //on passe ensuite à app.js pour terminer toutes les déclarations
