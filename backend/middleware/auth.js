@@ -20,7 +20,7 @@ module.exports = (req, res, next) => {
       /*si la demande contient un ID utilisateur, nous le
            comparons à celui extrait du token. 
           S'ils sont différents, nous générons une erreur ; */
-      throw "";
+      throw "Invalid user ID";
     } else {
       /*dans le cas contraire, tout fonctionne et notre utilisateur est
            authentifié. 
@@ -29,7 +29,7 @@ module.exports = (req, res, next) => {
     }
   } catch {
     res.status(401).json({
-      error: new Error(""),
+      error: new Error("Invalid request!"),
     });
   }
 };

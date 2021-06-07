@@ -22,8 +22,9 @@ exports.signup = (req, res, next) => {
     .then((hash) => {
       //procède au hashage
       const user = new User({
+        userId: req.body.userId,
         email: req.body.email, //demande à ce que l'email existe
-        password: hash,
+        password: hash
       });
       user
         .save()

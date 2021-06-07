@@ -16,6 +16,8 @@ incluse dans le "dependencies" du package.json
 /* 2- une fois express installé, on passe bien sur à sa création */
 const express = require("express");
 
+
+
 /* 12- On installe mongoose: npm install nodemon -g ? 
 (si mongoose n'apparait pas dans dependencies faire ensuite npm install --save mongoose)
 pour gérer la B.D. mongoDB. Ensuite ont la délcare */
@@ -82,6 +84,8 @@ b-p date de 2019.
 ON PEUT UTILISER: app.use(express.json());
 */
 app.use(express.json());
+
+
 
 /* 45- */
 app.use("/images", express.static(path.join(__dirname, "images")));
