@@ -39,23 +39,44 @@ exports.getOneSauce = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-  const sauceObject = req.file //on regarde si un req.file existe, c-a-d si une image est présente dans la modification
-    ? { //si oui il existe on remplace l'image
-      //par contre comment faire pour supprimer l'ancienne image pour qu'elle ne soit pas stockée dans images ?
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get("host")}/images/${
-          //on utilise multer
-          req.file.filename
-        }`,
-      }
-    : { //si non il n'existe pas, on change juste les textes
-      ...req.body };
-  Thing.updateOne(
-    { _id: req.params.id },
-    { ...sauceObject, _id: req.params.id } //nous utilisons l'ID que nous recevons comme paramètre pour accéder au Thing correspondant dans la base de données ;
-  )
-    .then(() => res.status(200).json({ message: "Objet modifié !" }))
-    .catch((error) => res.status(400).json({ error }));
+  Thing.findOne({ _id: req.params.id }) //nous utilisons l'ID que nous recevons comme paramètre pour accéder au Thing correspondant dans la base de données ;
+    .then((thing) => {
+      const filename = thing.imageUrl.split("/images/")[1]; //nous utilisons le fait de savoir que notre URL d'image contient un segment /images/ pour séparer le nom de fichier ;
+      fs.unlink(`images/${filename}`, () => {
+        //nous utilisons ensuite la fonction unlink du package fs pour supprimer ce fichier
+      });
+    })
+    .then(() => {
+      const sauceObject = req.file //on regarde si un req.file existe, c-a-d si une image est présente dans la modification
+        ? {
+            //si oui il existe on remplace l'image
+            //par contre comment faire pour supprimer l'ancienne image pour qu'elle ne soit pas stockée dans images ?
+            ...JSON.parse(req.body.sauce),
+            imageUrl: `${req.protocol}://${req.get("host")}/images/${
+              //on utilise multer
+              req.file.filename
+            }`,
+          }
+        : {
+            //si non il n'existe pas, on change juste les textes
+            ...req.body,
+          };
+      Thing.updateOne(
+        { _id: req.params.id },
+        { ...sauceObject, _id: req.params.id } //nous utilisons l'ID que nous recevons comme paramètre pour accéder au Thing correspondant dans la base de données ;
+      )
+        .then(() => res.status(200).json({ message: "Objet modifié !" }))
+        .catch((error) => res.status(400).json({ error }));
+    });
+  /* Dans cette partie du code on dit à la machine de recupérer l'Id correspondate à l'objet
+    puis pour la commande modifier, d'unlink la photo précédente. Le unlink permet de supprimer
+    un fichier dans node.js du local file system. Pour le supprimer de la base de donnée mongo
+    on utilise deleteOne. Ici on veut simplement remplacer l'image. 
+    Donc on recupère l'élément en fonction de son id, on le vire du système local, puis on
+    pose la question: est ce qu'il y a un req.file, c-a-d, s'il y a une image. Si oui, on introduit la nouvelle photo
+    avec multer puis on fait la mise en jour dans la base de donnée avec updateOne.
+    Si non, on update simplement sans photo aka sns multer. 
+    */
 };
 
 exports.deleteSauce = (req, res, next) => {
@@ -84,6 +105,7 @@ exports.getAllSauce = (req, res, next) => {
     });
 };
 
+/* le problème de la sauce c'est que le like doit persister même après qu'on back */
 exports.sauceLike = (req, res, next) => {
   Thing.findOne({
     _id: req.params.id,

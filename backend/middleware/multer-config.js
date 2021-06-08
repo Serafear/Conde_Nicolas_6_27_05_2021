@@ -34,5 +34,5 @@ const storage = multer.diskStorage({
 
 
 /* 24-on prépare multer à l'exportation */
-module.exports = multer({ storage, limits : {fileSize : 500000} /* 500kb? */ }).single("image");
+module.exports = multer({ storage, limits : {fileSize : 1000000} /* 1mb? */ }).single("image");
 //On passe ensuite à auth.js qu'on utilisera dans le dossier routes.
