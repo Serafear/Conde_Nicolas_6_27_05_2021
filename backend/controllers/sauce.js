@@ -1,6 +1,6 @@
 /* 41-on importe thing depuis models */
 const Thing = require("../models/Thing");
-const User = require("../models/User");
+
 
 /* 42-pour avoir accès au système de fichier pour delete les données 
 dans la base de donnée */
@@ -15,6 +15,8 @@ exports.createSauce = (req, res, next) => {
   delete sauceObject._id;
   const thing = new Thing({
     ...sauceObject,
+    likes :0,
+    dislikes:0,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`,
