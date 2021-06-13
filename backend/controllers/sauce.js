@@ -117,42 +117,55 @@ exports.sauceLike = (req, res, next) => {
 
 //essai sauce, n°2
 exports.sauceVote = (req, res, next) => {
-  let like = req.params.like;
-  switch (like) {
-    case like === 1:
-      Thing.findOne({ _id: req.params.id }).then(() => {
-        Thing.updateOne(
-          { _id: req.params.id },
-          { $inc: { likes: 1 } },
-          { $push: { userId: 1 } }
-        )
-          .then(() => res.status(200).json({ message: "Objet liké !" }))
-          .catch((error) => res.status(400).json({ error }));
-      });
-      break;
+  switch (req.body.like) {
+    ///// suppression de la valeur par défaut 0 puis ajoute un like ou dislike
+    case 0:
+      Thing.findOne({ _id: req.params.id })
+        .then((thing) => {
+          if (thing.usersLiked.find(user => user === req.body.userId)) {
+            Thing.updateOne({ _id: req.params.id }, {
+              $inc: { likes: -1 }, ///// incrémente un like
+              $pull: { usersLiked: req.body.userId }, ///// l'opérateur supprime le like
+              _id: req.params.id
+            })
+              .then(() => { res.status(201).json({ message: 'Avis enregistré' }); })
+              .catch((error) => { res.status(400).json({ error: error }); });
 
-    case like === 0:
-      Thing.findOne({ _id: req.params.id }).then(() => {
-        Thing.updateOne(
-          { _id: req.params.id },
-          { $inc: { likes: -1 } },
-          { $push: { userId: -1 } }
-        )
-          .then(() => res.status(200).json({ message: "Objet modifié !" }))
-          .catch((error) => res.status(400).json({ error }));
-      });
+          } if (thing.usersDisliked.find(user => user === req.body.userId)) {
+            Thing.updateOne({ _id: req.params.id }, {
+              $inc: { dislikes: -1 },
+              $pull: { usersDisliked: req.body.userId },
+              _id: req.params.id
+            })
+              .then(() => { res.status(201).json({ message: 'Avis enregistré' }); })
+              .catch((error) => { res.status(400).json({ error: error }); });
+          }
+        })
+        .catch((error) => { res.status(404).json({ error: error }); });
       break;
-
-    case like === -1:
-      Thing.findOne({ _id: req.params.id }).then(() => {
-        Thing.updateOne(
-          { _id: req.params.id },
-          { $inc: { dislikes: 1 } },
-          { $push: { userId: 1 } }
-        )
-          .then(() => res.status(200).json({ message: "Objet disliké !" }))
-          .catch((error) => res.status(400).json({ error }));
-      });
+    ///// si la valeur du like est à 1
+    case 1:
+      Thing.updateOne({ _id: req.params.id }, {
+        $inc: { likes: 1 },
+        $push: { usersLiked: req.body.userId },
+        _id: req.params.id
+      })
+        .then(() => { res.status(201).json({ message: 'Like ajouté' }); })
+        .catch((error) => { res.status(400).json({ error: error }); });
+      break;
+    //likes = -1
+    //uptade the sauce, send message/error
+    case -1:
+      Thing.updateOne({ _id: req.params.id }, {
+        $inc: { dislikes: 1 },
+        $push: { usersDisliked: req.body.userId },
+        _id: req.params.id
+      })
+        .then(() => { res.status(201).json({ message: 'Dislike ajouté' }) })
+        .catch((error) => { res.status(400).json({ error: error }) });
+      break;
+    default:
+      console.error('Bad request')
   }
 };
 
