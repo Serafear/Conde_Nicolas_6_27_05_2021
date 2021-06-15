@@ -11,30 +11,58 @@ const jwt = require("jsonwebtoken");
  mongoose là-bas  */
 const User = require("../models/User");
 
-/* 39- On crée la logique du signup: l'inscription de nouveaux utilisateurs */
+/* 48- on termine le projet en installant le password validator: npm install password-validator --save */
+const passwordValidator = require("password-validator");
+const schema = new passwordValidator();
+
+//https://www.npmjs.com/package/password-validator pour plus de détails
+schema
+  .is()
+  .min(8) // Minimum length 8
+  .is()
+  .max(20) // Maximum length 20
+  .has()
+  .uppercase() // Must have uppercase letters
+  .has()
+  .lowercase() // Must have lowercase letters
+  .has()
+  .digits(3) // Must have at least 3 digits
+  .has()
+  .not()
+  .spaces() // Should not have spaces
+  .is()
+  .not()
+  .oneOf(["Passw0rd", "Password123", "Pa55w0rd"]) // Blacklist these values
+  .symbols([2]); //must have at least 2 symbols
+
+/* 39- On crée la logique du signup: l'inscription de nouveaux utilisateurs
+/49- On rajoute le schema
+*/
 exports.signup = (req, res, next) => {
-  //on utilise bcrypt
-  bcrypt
-    .hash(req.body.password, 10)
-    //c'est la fonction pour hacher le mot de passe : ###
-    //nous appelons la fonction de hachage de bcrypt dans notre mot de passe et lui demandons de « saler » le mot de passe 10 fois. Plus la valeur est élevée, plus l'exécution
-    //de la fonction sera longue, et plus le hachage sera sécurisé
-    .then((hash) => {
-      //procède au hashage
-      const user = new User({
-        userId: req.body.userId,
-        email: req.body.email, //demande à ce que l'email existe
-        password: hash
-      });
-      user
-        .save()
-        /*Dans notre bloc then , nous créons un utilisateur et l'enregistrons dans la base de données, en renvoyant une réponse de réussite en cas de succès, 
+  if (schema.validate(req.body.password)) {
+    //on utilise bcrypt
+    bcrypt
+      .hash(req.body.password, 10)
+      //c'est la fonction pour hacher le mot de passe : ###
+      //nous appelons la fonction de hachage de bcrypt dans notre mot de passe et lui demandons de « saler » le mot de passe 10 fois. Plus la valeur est élevée, plus l'exécution
+      //de la fonction sera longue, et plus le hachage sera sécurisé
+      .then((hash) => {
+        //procède au hashage
+        const user = new User({
+          userId: req.body.userId,
+          email: req.body.email, //demande à ce que l'email existe
+          password: hash,
+        });
+        user
+          .save()
+          /*Dans notre bloc then , nous créons un utilisateur et l'enregistrons dans la base de données, en renvoyant une réponse de réussite en cas de succès, 
           et des erreurs avec le code d'erreur en cas d'échec */
-        .then(() => res.status(201).json({ message: "" }))
-        .catch((error) => res.status(500).json({ error }));
-    })
-    //si il y a un problème alors on affiche un problème
-    .catch((error) => res.status(500).json({ error }));
+          .then(() => res.status(201).json({ message: "" }))
+          .catch((error) => res.status(500).json({ error }));
+      })
+      //si il y a un problème alors on affiche un problème
+      .catch((error) => res.status(500).json({ error }));
+  }
 };
 
 // 40- ici c'est le login, la connexion des utilisateurs existants
