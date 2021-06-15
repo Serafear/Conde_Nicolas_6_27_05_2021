@@ -38,6 +38,36 @@ const path = require("path");
 const sauceRoutes = require("./routes/sauce");
 const userRoutes = require("./routes/user");
 
+/* 47- On s'occupe de la protection contre les brèches selon l'OWASP
+Pour celà on va installer quelques dependencies :
+helmet: npm install helmet --save (dans app.js)
+xss-clean: npm install xss-clean --save   (dans app.js)
+hpp: npm install hpp --save  (dans app.js)
+mongo sanitize: npm install express-mongo-sanitize --save  (dans app.js)
+express rate limit: npm install express-rate-limit --save  (dans route user.js)
+https://dev.to/itsnitinr/5-npm-packages-to-secure-your-node-js-backend-in-5-minutes-2732
+
+On installera également password validator : npm install password-validator --save (dans controllers user) 
+
+helmet protège des Cross-site scripting, cross-site injections, clickjacking, MIME sniffing
+
+xss clean protège des Cross-site scripting / XSS attacks
+
+hpp protège des Contournement des validations d'entrée et des attaques par déni de service (DoS) par TypeError 
+non détecté dans le code asynchrone, entraînant un plantage du serveur.
+
+mongo sanitize protège de l'Injection d'opérateur MongoDB. Des utilisateurs malveillants pourraient envoyer 
+un objet contenant un opérateur $, ou incluant un ., ce qui pourrait changer 
+le contexte d'une opération de base de données
+
+express rate limite protège des attaques par force brute. 
+*/
+const helmet = require('helmet');
+const xssClean = require('xss-clean');
+const mongoSanitize = require('express-mongo-sanitize');
+const hpp = require('hpp');
+
+
 /* 3- une fois express crée on passe bien sur à son appel à travers la création de la const app*/
 const app = express();
 
@@ -94,6 +124,11 @@ app.use("/images", express.static(path.join(__dirname, "images")));
   et on dit que pour cette route la on utilise le router exposé par stuffRoutes */
 app.use("/api/sauces", sauceRoutes);
 app.use("/api/auth", userRoutes);
+
+app.use(helmet());
+app.use(xssClean());
+app.use(mongoSanitize());
+app.use(hpp());
 
 
 

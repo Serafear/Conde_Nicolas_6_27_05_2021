@@ -10,7 +10,7 @@ const thingSchema = mongoose.Schema({
   imageUrl: { type: String, require: true },
   heat: { type: Number, require: true },
   userId: { type: String, require: true },
-  likes: { type: Number},
+  likes: { type: Number}, //pour avoir les valeurs 0 par défaut on aurait pu faire { type: Number, default: 0 } au lieu de les déclarer dans le controllers
   dislikes: { type: Number},
   usersLiked: {type:[String]},
   usersDisliked: {type:[String]} //pas de virgule
